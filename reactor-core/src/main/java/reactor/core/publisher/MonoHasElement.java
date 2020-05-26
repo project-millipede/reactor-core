@@ -31,6 +31,12 @@ final class MonoHasElement<T> extends MonoOperator<T, Boolean> implements Fuseab
 	}
 
 	@Override
+	public Object scanUnsafe(Attr key) {
+		if (key == Attr.RUN_STYLE) return Attr.RunStyle.SYNC;
+		return super.scanUnsafe(key);
+	}
+
+	@Override
 	public void subscribe(CoreSubscriber<? super Boolean> actual) {
 		source.subscribe(new HasElementSubscriber<>(actual));
 	}
@@ -48,6 +54,9 @@ final class MonoHasElement<T> extends MonoOperator<T, Boolean> implements Fuseab
 		public Object scanUnsafe(Attr key) {
 			if (key == Attr.PARENT) {
 				return s;
+			}
+			if (key == Attr.RUN_STYLE) {
+				return Attr.RunStyle.SYNC;
 			}
 			return super.scanUnsafe(key);
 		}

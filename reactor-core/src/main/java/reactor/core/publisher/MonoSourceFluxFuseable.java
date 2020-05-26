@@ -37,4 +37,10 @@ final class MonoSourceFluxFuseable<I> extends MonoFromFluxOperator<I, I> impleme
 	public void subscribe(CoreSubscriber<? super I> actual) {
 		source.subscribe(actual);
 	}
+
+	@Override
+	public Object scanUnsafe(Attr key) {
+		if (key == Attr.RUN_STYLE) return Attr.RunStyle.SYNC;
+		return super.scanUnsafe(key);
+	}
 }

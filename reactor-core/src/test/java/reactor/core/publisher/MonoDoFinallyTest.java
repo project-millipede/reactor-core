@@ -25,6 +25,7 @@ import org.assertj.core.api.Assertions;
 import org.junit.Before;
 import org.junit.Test;
 import reactor.core.Exceptions;
+import reactor.core.Scannable;
 import reactor.test.StepVerifier;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -200,6 +201,13 @@ public class MonoDoFinallyTest implements Consumer<SignalType> {
 
 		Assertions.assertThat(finallyOrder)
 		          .containsExactly("SECOND", "FIRST");
+	}
+
+	@Test
+	public void scanOperator(){
+		MonoDoFinally<String> test = new MonoDoFinally<>(Mono.just("foo"), this);
+
+		Assertions.assertThat(test.scan(Scannable.Attr.RUN_STYLE)).isSameAs(Scannable.Attr.RunStyle.SYNC);
 	}
 
 }

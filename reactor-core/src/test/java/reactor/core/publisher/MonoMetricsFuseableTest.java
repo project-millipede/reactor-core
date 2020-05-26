@@ -18,7 +18,6 @@ package reactor.core.publisher;
 
 import java.time.Duration;
 import java.util.Collections;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -38,10 +37,11 @@ import org.junit.Test;
 import org.reactivestreams.Subscription;
 import reactor.core.Disposable;
 import reactor.core.Fuseable;
+import reactor.core.Scannable;
 import reactor.core.publisher.MonoMetrics.MicrometerMonoMetricsFuseableSubscriber;
+import reactor.core.publisher.MonoMetrics.MicrometerMonoMetricsSubscriber;
 import reactor.test.StepVerifier;
 import reactor.test.subscriber.AssertSubscriber;
-import reactor.util.annotation.Nullable;
 
 import static org.assertj.core.api.Assertions.*;
 import static reactor.core.publisher.FluxMetrics.*;
@@ -58,6 +58,33 @@ public class MonoMetricsFuseableTest {
 	@After
 	public void removeRegistry() {
 		registry.close();
+	}
+
+	@Test
+	public void scanOperator(){
+		MonoMetricsFuseable<String> test = new MonoMetricsFuseable<>(Mono.just("foo"), registry);
+
+		assertThat(test.scan(Scannable.Attr.RUN_STYLE)).isSameAs(Scannable.Attr.RunStyle.SYNC);
+	}
+
+	@Test
+	public void scanSubscriber(){
+		AssertSubscriber<Integer> testSubscriber = AssertSubscriber.create();
+		MicrometerMonoMetricsSubscriber<Integer> test =
+				new MicrometerMonoMetricsSubscriber<>(testSubscriber,
+						registry, Clock.SYSTEM, "foo", Collections.emptyList());
+
+		assertThat(test.scan(Scannable.Attr.RUN_STYLE)).isSameAs(Scannable.Attr.RunStyle.SYNC);
+	}
+
+	@Test
+	public void scanFuseableSubscriber(){
+		AssertSubscriber<Integer> testSubscriber = AssertSubscriber.create();
+		MicrometerMonoMetricsFuseableSubscriber<Integer> test =
+				new MicrometerMonoMetricsFuseableSubscriber<>(testSubscriber,
+						registry, Clock.SYSTEM, "foo", Collections.emptyList());
+
+		assertThat(test.scan(Scannable.Attr.RUN_STYLE)).isSameAs(Scannable.Attr.RunStyle.SYNC);
 	}
 
 	// === Fuseable-specific tests ===

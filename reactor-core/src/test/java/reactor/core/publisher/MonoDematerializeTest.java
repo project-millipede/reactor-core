@@ -17,7 +17,10 @@ package reactor.core.publisher;
 
 import org.junit.Ignore;
 import org.junit.Test;
+import reactor.core.Scannable;
 import reactor.test.subscriber.AssertSubscriber;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class MonoDematerializeTest {
 
@@ -128,5 +131,12 @@ public class MonoDematerializeTest {
 		  .assertNoError()
 		  .assertComplete();
 
+	}
+
+	@Test
+	public void scanOperator(){
+	    MonoDematerialize test = new MonoDematerialize(Mono.just(Signal.next(1)));
+
+		assertThat(test.scan(Scannable.Attr.RUN_STYLE)).isSameAs(Scannable.Attr.RunStyle.SYNC);
 	}
 }

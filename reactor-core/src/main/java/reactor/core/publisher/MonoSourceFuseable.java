@@ -51,6 +51,9 @@ final class MonoSourceFuseable<I> extends Mono<I> implements Fuseable, Scannable
 		if (key == Attr.PARENT) {
 			return source;
 		}
+		if (key == Attr.RUN_STYLE) {
+		    return Attr.RunStyle.SYNC;
+		}
 		return null;
 	}
 }

@@ -25,6 +25,7 @@ import org.junit.Test;
 import org.reactivestreams.Subscription;
 
 import reactor.core.Fuseable;
+import reactor.core.Scannable;
 import reactor.test.StepVerifier;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -170,4 +171,10 @@ public class MonoDoFirstTest {
 		assertThat(subRef.get().getClass()).isEqualTo(FluxMapFuseable.MapFuseableSubscriber.class);
 	}
 
+	@Test
+	public void scanOperator(){
+	    MonoDoFirst<String> test = new MonoDoFirst<>(Mono.just("foo"), () -> {});
+
+		assertThat(test.scan(Scannable.Attr.RUN_STYLE)).isSameAs(Scannable.Attr.RunStyle.SYNC);
+	}
 }
