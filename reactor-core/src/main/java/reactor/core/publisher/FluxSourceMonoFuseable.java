@@ -50,7 +50,7 @@ final class FluxSourceMonoFuseable<I> extends FluxFromMonoOperator<I, I> impleme
 
 	@Override
 	public Object scanUnsafe(Attr key) {
-		if (key == Attr.RUN_STYLE) return Attr.RunStyle.SYNC;
+		if (key == Attr.RUN_STYLE) return Scannable.from(source).scanUnsafe(key);
 		return super.scanUnsafe(key);
 	}
 
