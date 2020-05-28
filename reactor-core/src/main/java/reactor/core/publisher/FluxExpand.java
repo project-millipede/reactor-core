@@ -77,6 +77,12 @@ final class FluxExpand<T> extends FluxOperator<T, T> {
 		}
 	}
 
+	@Override
+	public Object scanUnsafe(Attr key) {
+		if (key == Attr.RUN_STYLE) return Attr.RunStyle.SYNC;
+		return super.scanUnsafe(key);
+	}
+
 	static final class ExpandBreathSubscriber<T>
 			extends Operators.MultiSubscriptionSubscriber<T, T> {
 
@@ -181,6 +187,7 @@ final class FluxExpand<T> extends FluxOperator<T, T> {
 		@Override
 		public Object scanUnsafe(Attr key) {
 			if (key == Attr.BUFFERED) return queue != null ? queue.size() : 0;
+			if (key == Attr.RUN_STYLE) return Attr.RunStyle.SYNC;
 
 			return super.scanUnsafe(key);
 		}
@@ -490,6 +497,7 @@ final class FluxExpand<T> extends FluxOperator<T, T> {
 			if (key == Attr.PARENT) return s;
 			if (key == Attr.ACTUAL) return parent.actual;
 			if (key == Attr.TERMINATED) return this.done;
+			if (key == Attr.RUN_STYLE) return Attr.RunStyle.SYNC;
 
 			return null;
 		}

@@ -85,6 +85,12 @@ final class FluxDistinct<T, K, C> extends FluxOperator<T, T> {
 		}
 	}
 
+	@Override
+	public Object scanUnsafe(Attr key) {
+		if (key == Attr.RUN_STYLE) return Attr.RunStyle.SYNC;
+		return super.scanUnsafe(key);
+	}
+
 	static final class DistinctSubscriber<T, K, C>
 			implements ConditionalSubscriber<T>, InnerOperator<T, T> {
 
@@ -215,6 +221,7 @@ final class FluxDistinct<T, K, C> extends FluxOperator<T, T> {
 		public Object scanUnsafe(Attr key) {
 			if (key == Attr.PARENT) return s;
 			if (key == Attr.TERMINATED) return done;
+			if (key == Attr.RUN_STYLE) return Attr.RunStyle.SYNC;
 
 			return InnerOperator.super.scanUnsafe(key);
 		}
@@ -383,6 +390,7 @@ final class FluxDistinct<T, K, C> extends FluxOperator<T, T> {
 		public Object scanUnsafe(Attr key) {
 			if (key == Attr.PARENT) return s;
 			if (key == Attr.TERMINATED) return done;
+			if (key == Attr.RUN_STYLE) return Attr.RunStyle.SYNC;
 
 			return InnerOperator.super.scanUnsafe(key);
 		}
@@ -530,6 +538,7 @@ final class FluxDistinct<T, K, C> extends FluxOperator<T, T> {
 		public Object scanUnsafe(Attr key) {
 			if (key == Attr.PARENT) return qs;
 			if (key == Attr.TERMINATED) return done;
+			if (key == Attr.RUN_STYLE) return Attr.RunStyle.SYNC;
 
 			return InnerOperator.super.scanUnsafe(key);
 		}

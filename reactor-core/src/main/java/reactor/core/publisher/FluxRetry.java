@@ -52,6 +52,12 @@ final class FluxRetry<T> extends FluxOperator<T, T> {
 		}
 	}
 
+	@Override
+	public Object scanUnsafe(Attr key) {
+		if (key == Attr.RUN_STYLE) return Attr.RunStyle.SYNC;
+		return super.scanUnsafe(key);
+	}
+
 	static final class RetrySubscriber<T>
 			extends Operators.MultiSubscriptionSubscriber<T, T> {
 
@@ -110,6 +116,12 @@ final class FluxRetry<T> extends FluxOperator<T, T> {
 
 				} while (WIP.decrementAndGet(this) != 0);
 			}
+		}
+
+		@Override
+		public Object scanUnsafe(Attr key) {
+			if (key == Attr.RUN_STYLE) return Attr.RunStyle.SYNC;
+			return super.scanUnsafe(key);
 		}
 	}
 }

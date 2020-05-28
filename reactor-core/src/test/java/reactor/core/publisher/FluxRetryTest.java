@@ -20,8 +20,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
 import org.junit.Test;
+import reactor.core.Scannable;
 import reactor.test.StepVerifier;
 import reactor.test.subscriber.AssertSubscriber;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class FluxRetryTest {
 
@@ -136,5 +139,21 @@ public class FluxRetryTest {
 		    .retry(2)
 		    .subscribeWith(AssertSubscriber.create())
 		    .assertValues(1);
+	}
+
+	@Test
+	public void scanOperator(){
+	    FluxRetry<Integer> test = new FluxRetry(Flux.just(1), 3L);
+
+	    assertThat(test.scan(Scannable.Attr.RUN_STYLE)).isSameAs(Scannable.Attr.RunStyle.SYNC);
+	}
+
+	@Test
+	public void scanSubscriber(){
+		AssertSubscriber<Integer> ts = AssertSubscriber.create();
+		FluxRetry<Integer> source = new FluxRetry(Flux.just(1), 3L);
+		FluxRetry.RetrySubscriber<Integer> test = new FluxRetry.RetrySubscriber(source, ts, 1L);
+
+		assertThat(test.scan(Scannable.Attr.RUN_STYLE)).isSameAs(Scannable.Attr.RunStyle.SYNC);
 	}
 }
