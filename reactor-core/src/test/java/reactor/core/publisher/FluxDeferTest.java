@@ -20,7 +20,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Assert;
 import org.junit.Test;
+import reactor.core.Scannable;
 import reactor.test.subscriber.AssertSubscriber;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static reactor.core.publisher.Flux.just;
 
 public class FluxDeferTest {
 
@@ -58,23 +62,29 @@ public class FluxDeferTest {
 	public void normal() {
 		AssertSubscriber<Integer> ts = AssertSubscriber.create();
 
-		Flux.defer(() -> Flux.just(1)).subscribe(ts);
+		Flux.defer(() -> just(1)).subscribe(ts);
 
 		ts.assertValues(1)
 		  .assertNoError()
 		  .assertComplete();
 	}
 
-
 	@Test
 	public void deferStream(){
 		AtomicInteger i = new AtomicInteger();
 
 		Flux<Integer> source =
-				Flux.defer(() -> Flux.just(i.incrementAndGet()));
+				Flux.defer(() -> just(i.incrementAndGet()));
 
 		Assert.assertEquals(source.blockLast().intValue(), 1);
 		Assert.assertEquals(source.blockLast().intValue(), 2);
 		Assert.assertEquals(source.blockLast().intValue(), 3);
+	}
+
+	@Test
+	public void scanOperator(){
+	    FluxDefer<Integer> test = new FluxDefer(() -> Flux.just(1));
+
+	    assertThat(test.scan(Scannable.Attr.RUN_STYLE)).isSameAs(Scannable.Attr.RunStyle.SYNC);
 	}
 }

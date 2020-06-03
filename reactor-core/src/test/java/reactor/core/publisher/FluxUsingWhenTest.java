@@ -1036,22 +1036,7 @@ public class FluxUsingWhenTest {
 	public void scanOperator() {
 		FluxUsingWhen<Object, Object> op = new FluxUsingWhen<>(Mono.empty(), Mono::just, Mono::just, Mono::just, Mono::just);
 
-		assertThat(op.scanUnsafe(Attr.ACTUAL))
-				.isSameAs(op.scanUnsafe(Attr.ACTUAL_METADATA))
-				.isSameAs(op.scanUnsafe(Attr.BUFFERED))
-				.isSameAs(op.scanUnsafe(Attr.CAPACITY))
-				.isSameAs(op.scanUnsafe(Attr.CANCELLED))
-				.isSameAs(op.scanUnsafe(Attr.DELAY_ERROR))
-				.isSameAs(op.scanUnsafe(Attr.ERROR))
-				.isSameAs(op.scanUnsafe(Attr.LARGE_BUFFERED))
-				.isSameAs(op.scanUnsafe(Attr.NAME))
-				.isSameAs(op.scanUnsafe(Attr.PARENT))
-				.isSameAs(op.scanUnsafe(Attr.RUN_ON))
-				.isSameAs(op.scanUnsafe(Attr.PREFETCH))
-				.isSameAs(op.scanUnsafe(Attr.REQUESTED_FROM_DOWNSTREAM))
-				.isSameAs(op.scanUnsafe(Attr.TERMINATED))
-				.isSameAs(op.scanUnsafe(Attr.TAGS))
-				.isNull();
+		assertThat(op.scan(Attr.RUN_STYLE)).isSameAs(Attr.RunStyle.SYNC);
 	}
 
 	@Test
@@ -1065,6 +1050,7 @@ public class FluxUsingWhenTest {
 		assertThat(op.scan(Attr.ACTUAL)).as("ACTUAL").isSameAs(actual);
 
 		assertThat(op.scan(Attr.PREFETCH)).as("PREFETCH").isEqualTo(Integer.MAX_VALUE);
+		assertThat(op.scan(Attr.RUN_STYLE)).isSameAs(Attr.RunStyle.SYNC);
 
 		assertThat(op.scan(Attr.TERMINATED)).as("TERMINATED").isFalse();
 		op.resourceProvided = true;
@@ -1084,6 +1070,7 @@ public class FluxUsingWhenTest {
 		assertThat(op.scan(Attr.ACTUAL)).as("ACTUAL")
 		                                .isSameAs(actual)
 		                                .isSameAs(op.actual());
+		assertThat(op.scan(Attr.RUN_STYLE)).isSameAs(Attr.RunStyle.SYNC);
 
 		assertThat(op.scan(Attr.TERMINATED)).as("pre TERMINATED").isFalse();
 		assertThat(op.scan(Attr.CANCELLED)).as("pre CANCELLED").isFalse();
@@ -1107,6 +1094,7 @@ public class FluxUsingWhenTest {
 
 		assertThat(op.scan(Attr.PARENT)).as("PARENT").isSameAs(up);
 		assertThat(op.scan(Attr.ACTUAL)).as("ACTUAL").isSameAs(up.actual);
+		assertThat(op.scan(Attr.RUN_STYLE)).isSameAs(Attr.RunStyle.SYNC);
 
 		assertThat(op.scan(Attr.TERMINATED)).as("TERMINATED before").isFalse();
 
@@ -1133,6 +1121,7 @@ public class FluxUsingWhenTest {
 
 		assertThat(op.scan(Attr.PARENT)).as("PARENT").isSameAs(up);
 		assertThat(op.scan(Attr.ACTUAL)).as("ACTUAL").isSameAs(up.actual);
+		assertThat(op.scan(Attr.RUN_STYLE)).isSameAs(Attr.RunStyle.SYNC);
 
 		assertThat(op.scan(Attr.TERMINATED)).as("TERMINATED before").isFalse();
 
@@ -1158,6 +1147,7 @@ public class FluxUsingWhenTest {
 		assertThat(op.scan(Attr.PARENT)).as("PARENT").isSameAs(up);
 		assertThat(op.scan(Attr.ACTUAL)).as("ACTUAL").isSameAs(up.actual);
 		assertThat(op.scanUnsafe(Attr.PREFETCH)).as("PREFETCH not supported").isNull();
+		assertThat(op.scan(Attr.RUN_STYLE)).isSameAs(Attr.RunStyle.SYNC);
 	}
 
 	// == utility test classes ==

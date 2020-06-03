@@ -32,6 +32,7 @@ import reactor.test.StepVerifier;
 import reactor.test.subscriber.AssertSubscriber;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static reactor.core.Scannable.*;
 
 public class FluxIntervalTest {
 
@@ -150,12 +151,11 @@ public class FluxIntervalTest {
         CoreSubscriber<Long> actual = new LambdaSubscriber<>(null, e -> {}, null, null);
         FluxInterval.IntervalRunnable test = new FluxInterval.IntervalRunnable(actual, worker);
 
-        assertThat(test.scan(Scannable.Attr.THREAD_MODIFIER)).isTrue();
-        assertThat(test.scan(Scannable.Attr.RUN_ON)).isSameAs(worker);
-        assertThat(test.scan(Scannable.Attr.ACTUAL)).isSameAs(actual);
-        assertThat(test.scan(Scannable.Attr.CANCELLED)).isFalse();
+        assertThat(test.scan(Attr.RUN_ON)).isSameAs(worker);
+        assertThat(test.scan(Attr.ACTUAL)).isSameAs(actual);
+        assertThat(test.scan(Attr.CANCELLED)).isFalse();
         test.cancel();
-        assertThat(test.scan(Scannable.Attr.CANCELLED)).isTrue();
+        assertThat(test.scan(Attr.CANCELLED)).isTrue();
 		}
 		finally {
 			worker.dispose();
@@ -167,8 +167,8 @@ public class FluxIntervalTest {
 	    final Flux<Long> interval = Flux.interval(Duration.ofSeconds(1));
 
 	    assertThat(interval).isInstanceOf(Scannable.class);
-	    assertThat(((Scannable) interval).scan(Scannable.Attr.RUN_ON))
-			    .isSameAs(Schedulers.parallel());
+	    assertThat(from(interval).scan(Attr.RUN_ON)).isSameAs(Schedulers.parallel());
+	    assertThat(from(interval).scan(Attr.RUN_STYLE)).isSameAs(Attr.RunStyle.ASYNC);
     }
 
     @Test
