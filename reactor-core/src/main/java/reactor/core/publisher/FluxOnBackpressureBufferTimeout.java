@@ -33,6 +33,9 @@ import reactor.util.Loggers;
 import reactor.util.annotation.Nullable;
 import reactor.util.context.Context;
 
+import static reactor.core.Scannable.Attr.RUN_STYLE;
+import static reactor.core.Scannable.Attr.RunStyle.ASYNC;
+
 /**
  * Buffers values if the subscriber doesn't request fast enough, bounding the buffer to a
  * chosen size and applying a TTL (time-to-live) to the elements. If the buffer overflows,
@@ -82,7 +85,8 @@ final class FluxOnBackpressureBufferTimeout<O> extends FluxOperator<O, O> {
 	@Override
 	public Object scanUnsafe(Attr key) {
 		if (key == Attr.RUN_ON) return ttlScheduler;
-		if (key == Attr.THREAD_MODIFIER) return true;
+		if (key == RUN_STYLE) return ASYNC;
+
 		return super.scanUnsafe(key);
 	}
 
@@ -158,8 +162,13 @@ final class FluxOnBackpressureBufferTimeout<O> extends FluxOperator<O, O> {
 			if (key == Attr.DELAY_ERROR) {
 				return false;
 			}
-			if (key == Attr.RUN_ON) return ttlScheduler;
-			if (key == Attr.THREAD_MODIFIER) return true;
+			if (key == Attr.RUN_ON) {
+				return ttlScheduler;
+			}
+			if (key == RUN_STYLE) {
+			    return ASYNC;
+			}
+
 			return InnerOperator.super.scanUnsafe(key);
 		}
 

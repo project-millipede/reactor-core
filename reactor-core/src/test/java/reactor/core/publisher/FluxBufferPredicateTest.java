@@ -25,10 +25,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
 import java.util.concurrent.atomic.LongAdder;
 import java.util.function.Supplier;
-import java.util.stream.StreamSupport;
 
 import org.assertj.core.api.Assertions;
 import org.junit.Assert;
@@ -844,6 +842,16 @@ public class FluxBufferPredicateTest {
 	}
 
 	@Test
+	public void scanOperator(){
+		Flux<Integer> parent = Flux.just(1);
+		FluxBufferPredicate<Integer, ArrayList<Integer>> test =
+				new FluxBufferPredicate<>(parent, v -> (Integer) v != 0, ArrayList::new, FluxBufferPredicate.Mode.UNTIL);
+
+		Assertions.assertThat(test.scan(Scannable.Attr.PARENT)).isSameAs(parent);
+		Assertions.assertThat(test.scan(Scannable.Attr.RUN_STYLE)).isSameAs(Scannable.Attr.RunStyle.SYNC);
+	}
+
+	@Test
 	public void scanMain() {
 		CoreSubscriber<? super List> actual = new LambdaSubscriber<>(null, e -> {}, null,
 				sub -> sub.request(100));
@@ -859,6 +867,7 @@ public class FluxBufferPredicateTest {
 		Assertions.assertThat(test.scan(Scannable.Attr.REQUESTED_FROM_DOWNSTREAM)).isEqualTo(100L);
 		Assertions.assertThat(test.scan(Scannable.Attr.PARENT)).isSameAs(parent);
 		Assertions.assertThat(test.scan(Scannable.Attr.ACTUAL)).isSameAs(actual);
+		Assertions.assertThat(test.scan(Scannable.Attr.RUN_STYLE)).isSameAs(Scannable.Attr.RunStyle.SYNC);
 
 		Assertions.assertThat(test.scan(Scannable.Attr.CANCELLED)).isFalse();
 

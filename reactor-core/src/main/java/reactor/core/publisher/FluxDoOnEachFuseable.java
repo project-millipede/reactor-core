@@ -43,4 +43,10 @@ final class FluxDoOnEachFuseable<T> extends FluxOperator<T, T> implements Fuseab
 	public void subscribe(CoreSubscriber<? super T> actual) {
 		this.source.subscribe(FluxDoOnEach.createSubscriber(actual, this.onSignal, true, false));
 	}
+
+	@Override
+	public Object scanUnsafe(Attr key) {
+		if (key == Attr.RUN_STYLE) return Attr.RunStyle.SYNC;
+		return super.scanUnsafe(key);
+	}
 }

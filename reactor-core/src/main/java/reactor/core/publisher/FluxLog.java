@@ -50,4 +50,9 @@ final class FluxLog<T> extends FluxOperator<T, T> {
 		source.subscribe(new FluxPeek.PeekSubscriber<>(actual, log));
 	}
 
+	@Override
+	public Object scanUnsafe(Attr key) {
+		if (key == Attr.RUN_STYLE) return Attr.RunStyle.SYNC;
+		return super.scanUnsafe(key);
+	}
 }

@@ -63,6 +63,12 @@ final class FluxMapFuseable<T, R> extends FluxOperator<T, R> implements Fuseable
 		source.subscribe(new MapFuseableSubscriber<>(actual, mapper));
 	}
 
+	@Override
+	public Object scanUnsafe(Attr key) {
+		if (key == Attr.RUN_STYLE) return Attr.RunStyle.SYNC;
+		return super.scanUnsafe(key);
+	}
+
 	static final class MapFuseableSubscriber<T, R>
 			implements InnerOperator<T, R>,
 			           QueueSubscription<R> {
@@ -148,6 +154,7 @@ final class FluxMapFuseable<T, R> extends FluxOperator<T, R> implements Fuseable
 		public Object scanUnsafe(Attr key) {
 			if (key == Attr.PARENT) return s;
 			if (key == Attr.TERMINATED) return done;
+			if (key == Attr.RUN_STYLE) return Attr.RunStyle.SYNC;
 
 			return InnerOperator.super.scanUnsafe(key);
 		}
@@ -243,6 +250,7 @@ final class FluxMapFuseable<T, R> extends FluxOperator<T, R> implements Fuseable
 		public Object scanUnsafe(Attr key) {
 			if (key == Attr.PARENT) return s;
 			if (key == Attr.TERMINATED) return done;
+			if (key == Attr.RUN_STYLE) return Attr.RunStyle.SYNC;
 
 			return InnerOperator.super.scanUnsafe(key);
 		}

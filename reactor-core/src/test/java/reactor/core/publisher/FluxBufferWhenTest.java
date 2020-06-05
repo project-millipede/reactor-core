@@ -352,6 +352,19 @@ public class FluxBufferWhenTest {
 	}
 
 	@Test
+	public void scanOperator(){
+		Flux<Integer> source = Flux.just(1);
+		FluxBufferWhen test = new FluxBufferWhen(source,
+				Flux.interval(Duration.ZERO, Duration.ofMillis(200)),
+				open -> Mono.delay(Duration.ofMillis(100)),
+				ArrayList::new,
+				Queues.unbounded(Queues.XS_BUFFER_SIZE));
+
+		assertThat(test.scan(Scannable.Attr.PARENT)).isSameAs(source);
+		assertThat(test.scan(Scannable.Attr.RUN_STYLE)).isSameAs(Scannable.Attr.RunStyle.SYNC);
+	}
+
+	@Test
 	public void scanStartEndMain() {
 		CoreSubscriber<List<String>> actual = new LambdaSubscriber<>(null, e -> {}, null, null);
 
@@ -369,6 +382,7 @@ public class FluxBufferWhenTest {
 		assertThat(test.scan(Scannable.Attr.BUFFERED)).isEqualTo(0); //TODO
 		assertThat(test.scan(Scannable.Attr.REQUESTED_FROM_DOWNSTREAM)).isEqualTo(100L);
 		assertThat(test.scan(Scannable.Attr.ACTUAL)).isSameAs(actual);
+		assertThat(test.scan(Scannable.Attr.RUN_STYLE)).isSameAs(Scannable.Attr.RunStyle.SYNC);
 
 		test.onError(new IllegalStateException("boom"));
 		assertThat(test.scan(Scannable.Attr.TERMINATED)).isTrue();
@@ -419,6 +433,7 @@ public class FluxBufferWhenTest {
 
 		assertThat(test.scan(Scannable.Attr.ACTUAL)).isSameAs(main);
 		assertThat(test.scan(Scannable.Attr.PARENT)).isSameAs(parent);
+		assertThat(test.scan(Scannable.Attr.RUN_STYLE)).isSameAs(Scannable.Attr.RunStyle.SYNC);
 		assertThat(test.scan(Scannable.Attr.CANCELLED)).isFalse();
 
 		test.dispose();
@@ -442,6 +457,7 @@ public class FluxBufferWhenTest {
 		assertThat(test.scan(Scannable.Attr.REQUESTED_FROM_DOWNSTREAM)).isEqualTo(Long.MAX_VALUE);
 		assertThat(test.scan(Scannable.Attr.ACTUAL)).isSameAs(main);
 		assertThat(test.scan(Scannable.Attr.PARENT)).isSameAs(parent);
+		assertThat(test.scan(Scannable.Attr.RUN_STYLE)).isSameAs(Scannable.Attr.RunStyle.SYNC);
 		assertThat(test.scan(Scannable.Attr.CANCELLED)).isFalse();
 
 		test.dispose();

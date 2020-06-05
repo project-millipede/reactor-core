@@ -74,7 +74,8 @@ final class FluxBufferTimeout<T, C extends Collection<? super T>> extends FluxOp
 	@Override
 	public Object scanUnsafe(Attr key) {
 		if (key == Attr.RUN_ON) return timer;
-		if (key == Attr.THREAD_MODIFIER) return true;
+		if (key == Attr.RUN_STYLE) return Attr.RunStyle.ASYNC;
+
 		return super.scanUnsafe(key);
 	}
 
@@ -217,7 +218,8 @@ final class FluxBufferTimeout<T, C extends Collection<? super T>> extends FluxOp
 			if (key == Attr.CAPACITY) return batchSize;
 			if (key == Attr.BUFFERED) return batchSize - index;
 			if (key == Attr.RUN_ON) return timer;
-			if (key == Attr.THREAD_MODIFIER) return true;
+			if (key == Attr.RUN_STYLE) return Attr.RunStyle.ASYNC;
+
 			return InnerOperator.super.scanUnsafe(key);
 		}
 

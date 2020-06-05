@@ -57,6 +57,12 @@ final class FluxDelaySubscription<T, U> extends FluxOperator<T, T>
 		source.subscribe(new DelaySubscriptionMainSubscriber<>(s.actual, s));
 	}
 
+	@Override
+	public Object scanUnsafe(Attr key) {
+		if (key == Attr.RUN_STYLE) return Attr.RunStyle.SYNC;
+		return super.scanUnsafe(key);
+	}
+
 	static final class DelaySubscriptionOtherSubscriber<T, U>
 			extends Operators.DeferredSubscription implements InnerOperator<U, T> {
 
@@ -85,6 +91,7 @@ final class FluxDelaySubscription<T, U> extends FluxOperator<T, T>
 			if (key == Attr.PARENT) return s;
 			if (key == Attr.ACTUAL) return actual;
 			if (key == Attr.TERMINATED) return done;
+			if (key == Attr.RUN_STYLE) return Attr.RunStyle.SYNC;
 
 			return super.scanUnsafe(key);
 		}
@@ -165,6 +172,7 @@ final class FluxDelaySubscription<T, U> extends FluxOperator<T, T>
 		@Nullable
 		public Object scanUnsafe(Attr key) {
 			if (key == Attr.ACTUAL) return actual;
+			if (key == Attr.RUN_STYLE) return Attr.RunStyle.SYNC;
 
 			return null;
 		}

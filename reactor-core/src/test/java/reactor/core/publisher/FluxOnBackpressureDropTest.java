@@ -145,6 +145,13 @@ public class FluxOnBackpressureDropTest {
 	}
 
 	@Test
+	public void scanOperator(){
+	    FluxOnBackpressureDrop test = new FluxOnBackpressureDrop(Flux.just(1));
+
+	    assertThat(test.scan(Scannable.Attr.RUN_STYLE)).isSameAs(Scannable.Attr.RunStyle.SYNC);
+	}
+
+	@Test
     public void scanSubscriber() {
         CoreSubscriber<Integer> actual = new LambdaSubscriber<>(null, e -> {}, null, null);
         FluxOnBackpressureDrop.DropSubscriber<Integer> test =
@@ -154,6 +161,8 @@ public class FluxOnBackpressureDropTest {
 
         assertThat(test.scan(Scannable.Attr.ACTUAL)).isSameAs(actual);
         assertThat(test.scan(Scannable.Attr.PARENT)).isSameAs(parent);
+        assertThat(test.scan(Scannable.Attr.RUN_STYLE)).isSameAs(Scannable.Attr.RunStyle.SYNC);
+
         test.requested = 35;
         assertThat(test.scan(Scannable.Attr.REQUESTED_FROM_DOWNSTREAM)).isEqualTo(35);
         assertThat(test.scan(Scannable.Attr.PREFETCH)).isEqualTo(Integer.MAX_VALUE);

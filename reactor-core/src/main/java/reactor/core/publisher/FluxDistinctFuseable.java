@@ -70,4 +70,10 @@ final class FluxDistinctFuseable<T, K, C>
 		source.subscribe(new DistinctFuseableSubscriber<>(actual, collection, keyExtractor,
 				distinctPredicate, cleanupCallback));
 	}
+
+	@Override
+	public Object scanUnsafe(Attr key) {
+		if (key == Attr.RUN_STYLE) return Attr.RunStyle.SYNC;
+		return super.scanUnsafe(key);
+	}
 }

@@ -42,6 +42,12 @@ final class FluxDefaultIfEmpty<T> extends FluxOperator<T, T> {
 		source.subscribe(new DefaultIfEmptySubscriber<>(actual, value));
 	}
 
+	@Override
+	public Object scanUnsafe(Attr key) {
+		if (key == Attr.RUN_STYLE) return Attr.RunStyle.SYNC;
+		return super.scanUnsafe(key);
+	}
+
 	static final class DefaultIfEmptySubscriber<T>
 			extends Operators.MonoSubscriber<T, T> {
 
@@ -58,6 +64,7 @@ final class FluxDefaultIfEmpty<T> extends FluxOperator<T, T> {
 		@Nullable
 		public Object scanUnsafe(Attr key) {
 			if (key == Attr.PARENT) return s;
+			if (key == Attr.RUN_STYLE) return Attr.RunStyle.SYNC;
 
 			return super.scanUnsafe(key);
 		}

@@ -42,7 +42,7 @@ final class FluxCancelOn<T> extends FluxOperator<T, T> {
 	@Override
 	public Object scanUnsafe(Attr key) {
 		if (key == Attr.RUN_ON) return scheduler;
-		if (key == Attr.THREAD_MODIFIER) return true;
+		if (key == Attr.RUN_STYLE) return Attr.RunStyle.ASYNC;
 
 		return super.scanUnsafe(key);
 	}
@@ -78,7 +78,7 @@ final class FluxCancelOn<T> extends FluxOperator<T, T> {
 			if (key == Attr.PARENT) return s;
 			if (key == Attr.CANCELLED) return cancelled == 1;
 			if (key == Attr.RUN_ON) return scheduler;
-			if (key == Attr.THREAD_MODIFIER) return true;
+			if (key == Attr.RUN_STYLE) return Attr.RunStyle.ASYNC;
 
 			return InnerOperator.super.scanUnsafe(key);
 		}

@@ -85,6 +85,12 @@ final class FluxRepeatWhen<T> extends FluxOperator<T, T> {
 		}
 	}
 
+	@Override
+	public Object scanUnsafe(Attr key) {
+		if (key == Attr.RUN_STYLE) return Attr.RunStyle.SYNC;
+		return super.scanUnsafe(key);
+	}
+
 	static final class RepeatWhenMainSubscriber<T>
 			extends Operators.MultiSubscriptionSubscriber<T, T> {
 
@@ -192,6 +198,11 @@ final class FluxRepeatWhen<T> extends FluxOperator<T, T> {
 			actual.onComplete();
 		}
 
+		@Override
+		public Object scanUnsafe(Attr key) {
+			if (key == Attr.RUN_STYLE) return Attr.RunStyle.SYNC;
+			return super.scanUnsafe(key);
+		}
 	}
 
 	static final class RepeatWhenOtherSubscriber extends Flux<Long>
@@ -211,6 +222,7 @@ final class FluxRepeatWhen<T> extends FluxOperator<T, T> {
 		public Object scanUnsafe(Attr key) {
 			if (key == Attr.PARENT) return main.otherArbiter;
 			if (key == Attr.ACTUAL) return main;
+			if (key == Attr.RUN_STYLE) return Attr.RunStyle.SYNC;
 
 			return null;
 		}

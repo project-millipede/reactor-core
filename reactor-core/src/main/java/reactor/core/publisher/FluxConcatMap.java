@@ -121,6 +121,12 @@ final class FluxConcatMap<T, R> extends FluxOperator<T, R> {
 		source.subscribe(subscriber(actual, mapper, queueSupplier, prefetch, errorMode));
 	}
 
+	@Override
+	public Object scanUnsafe(Attr key) {
+		if (key == Attr.RUN_STYLE) return Attr.RunStyle.SYNC;
+		return super.scanUnsafe(key);
+	}
+
 	static final class ConcatMapImmediate<T, R>
 			implements FluxConcatMapSupport<T, R> {
 
@@ -189,6 +195,7 @@ final class FluxConcatMap<T, R> extends FluxOperator<T, R> {
 			if (key == Attr.PREFETCH) return prefetch;
 			if (key == Attr.BUFFERED) return queue != null ? queue.size() : 0;
 			if (key == Attr.ERROR) return error;
+			if (key == Attr.RUN_STYLE) return Attr.RunStyle.SYNC;
 
 			return FluxConcatMapSupport.super.scanUnsafe(key);
 		}
@@ -551,6 +558,7 @@ final class FluxConcatMap<T, R> extends FluxOperator<T, R> {
 			if (key == Attr.BUFFERED) return queue != null ? queue.size() : 0;
 			if (key == Attr.ERROR) return error;
 			if (key == Attr.DELAY_ERROR) return true;
+			if (key == Attr.RUN_STYLE) return Attr.RunStyle.SYNC;
 
 			return FluxConcatMapSupport.super.scanUnsafe(key);
 		}
@@ -838,6 +846,7 @@ final class FluxConcatMap<T, R> extends FluxOperator<T, R> {
 		@Override
 		public Object scanUnsafe(Attr key) {
 			if (key == Attr.ACTUAL) return parent;
+			if (key == Attr.RUN_STYLE) return Attr.RunStyle.SYNC;
 
 			return super.scanUnsafe(key);
 		}

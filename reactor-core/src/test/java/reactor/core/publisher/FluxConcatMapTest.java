@@ -863,6 +863,15 @@ public class FluxConcatMapTest extends FluxOperatorTest<String, String> {
 	}
 
 	@Test
+	public void scanOperator(){
+		Flux<Integer> parent = Flux.just(1, 2);
+		FluxConcatMap<Integer, String> test = new FluxConcatMap(parent, Flux.IDENTITY_FUNCTION , Queues.one(), Integer.MAX_VALUE, FluxConcatMap.ErrorMode.END);
+
+		assertThat(test.scan(Scannable.Attr.PARENT)).isSameAs(parent);
+		assertThat(test.scan(Scannable.Attr.RUN_STYLE)).isSameAs(Scannable.Attr.RunStyle.SYNC);
+	}
+
+	@Test
 	public void scanConcatMapDelayed() {
 		CoreSubscriber<Integer> actual = new LambdaSubscriber<>(null, e -> {}, null, null);
 		FluxConcatMap.ConcatMapDelayed<String, Integer> test = new FluxConcatMap.ConcatMapDelayed<>(
@@ -880,6 +889,7 @@ public class FluxConcatMapTest extends FluxOperatorTest<String, String> {
 		assertThat(test.scan(Scannable.Attr.ERROR)).hasMessage("boom");
 		assertThat(test.scan(Scannable.Attr.PARENT)).isSameAs(parent);
 		assertThat(test.scan(Scannable.Attr.ACTUAL)).isSameAs(actual);
+		assertThat(test.scan(Scannable.Attr.RUN_STYLE)).isSameAs(Scannable.Attr.RunStyle.SYNC);
 
 		assertThat(test.scan(Scannable.Attr.TERMINATED)).isFalse();
 		test.onError(new IllegalStateException("boom"));
@@ -906,6 +916,7 @@ public class FluxConcatMapTest extends FluxOperatorTest<String, String> {
 		assertThat(test.scan(Scannable.Attr.DELAY_ERROR)).isFalse();
 		assertThat(test.scan(Scannable.Attr.PARENT)).isSameAs(parent);
 		assertThat(test.scan(Scannable.Attr.ACTUAL)).isSameAs(actual);
+		assertThat(test.scan(Scannable.Attr.RUN_STYLE)).isSameAs(Scannable.Attr.RunStyle.SYNC);
 
 		assertThat(test.scan(Scannable.Attr.TERMINATED)).isFalse();
 		test.onComplete();
@@ -935,6 +946,17 @@ public class FluxConcatMapTest extends FluxOperatorTest<String, String> {
 		test.onError(new IllegalStateException("boom2"));
 		assertThat(test.scan(Scannable.Attr.ERROR)).isSameAs(Exceptions.TERMINATED);
 		assertThat(test.scan(Scannable.Attr.TERMINATED)).isTrue();
+	}
+
+	@Test
+	public void scanConcatMapInner(){
+		CoreSubscriber<Integer> actual = new LambdaSubscriber<>(null, e -> {}, null, null);
+		FluxConcatMap.ConcatMapImmediate<String, Integer> parent = new FluxConcatMap.ConcatMapImmediate<>(
+				actual, s -> Mono.just(s.length()), Queues.one(), 123);
+		FluxConcatMap.ConcatMapInner test = new FluxConcatMap.ConcatMapInner(parent);
+
+		assertThat(test.scan(Scannable.Attr.ACTUAL)).isSameAs(parent);
+	    assertThat(test.scan(Scannable.Attr.RUN_STYLE)).isSameAs(Scannable.Attr.RunStyle.SYNC);
 	}
 
 	@Test

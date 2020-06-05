@@ -39,6 +39,7 @@ import reactor.test.scheduler.VirtualTimeScheduler;
 import reactor.test.util.RaceTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static reactor.core.Scannable.from;
 
 public class FluxBufferTimeoutTest {
 
@@ -118,7 +119,6 @@ public class FluxBufferTimeoutTest {
 			test.requested = 3L;
 			test.index = 100;
 
-			assertThat(test.scan(Scannable.Attr.THREAD_MODIFIER)).isTrue();
 			assertThat(test.scan(Scannable.Attr.RUN_ON)).isSameAs(worker);
 			assertThat(test.scan(Scannable.Attr.PARENT)).isSameAs(subscription);
 			assertThat(test.scan(Scannable.Attr.ACTUAL)).isSameAs(actual);
@@ -126,6 +126,7 @@ public class FluxBufferTimeoutTest {
 			assertThat(test.scan(Scannable.Attr.REQUESTED_FROM_DOWNSTREAM)).isEqualTo(3L);
 			assertThat(test.scan(Scannable.Attr.CAPACITY)).isEqualTo(123);
 			assertThat(test.scan(Scannable.Attr.BUFFERED)).isEqualTo(23);
+			assertThat(test.scan(Scannable.Attr.RUN_STYLE)).isSameAs(Scannable.Attr.RunStyle.ASYNC);
 
 			assertThat(test.scan(Scannable.Attr.CANCELLED)).isFalse();
 			assertThat(test.scan(Scannable.Attr.TERMINATED)).isFalse();
@@ -144,7 +145,8 @@ public class FluxBufferTimeoutTest {
 		final Flux<List<Integer>> flux = Flux.just(1).bufferTimeout(3, Duration.ofSeconds(1));
 
 		assertThat(flux).isInstanceOf(Scannable.class);
-		assertThat(((Scannable) flux).scan(Scannable.Attr.RUN_ON)).isSameAs(Schedulers.parallel());
+		assertThat(from(flux).scan(Scannable.Attr.RUN_ON)).isSameAs(Schedulers.parallel());
+		assertThat(from(flux).scan(Scannable.Attr.RUN_STYLE)).isSameAs(Scannable.Attr.RunStyle.ASYNC);
 	}
 
 	@Test

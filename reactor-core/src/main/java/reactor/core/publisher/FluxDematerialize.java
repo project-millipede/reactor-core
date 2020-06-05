@@ -39,6 +39,12 @@ final class FluxDematerialize<T> extends FluxOperator<Signal<T>, T> {
 		source.subscribe(new DematerializeSubscriber<>(actual));
 	}
 
+	@Override
+	public Object scanUnsafe(Attr key) {
+		if (key == Attr.RUN_STYLE) return Attr.RunStyle.SYNC;
+		return super.scanUnsafe(key);
+	}
+
 	static final class DematerializeSubscriber<T> extends AbstractQueue<T>
 			implements InnerOperator<Signal<T>, T>,
 			           BooleanSupplier {
@@ -76,6 +82,7 @@ final class FluxDematerialize<T> extends FluxOperator<Signal<T>, T> {
 			if (key == Attr.ERROR) return error;
 			if (key == Attr.CANCELLED) return cancelled;
 			if (key == Attr.BUFFERED) return size();
+			if (key == Attr.RUN_STYLE) return Attr.RunStyle.SYNC;
 
 			return InnerOperator.super.scanUnsafe(key);
 		}

@@ -275,6 +275,18 @@ public class FluxGroupJoinTest {
 	}
 
 	@Test
+	public void scanOperator(){
+		Flux<Integer> source1 = Flux.just(1);
+		Flux<Integer> source2 = Flux.just(2);
+
+		FluxGroupJoin<Integer, Integer, Integer, Object, Flux<Integer>> test =
+				new FluxGroupJoin<>(source1, source2, just(Flux.never()), just2(Flux.never()), add2, Queues.unbounded(Queues.XS_BUFFER_SIZE), Queues.unbounded(Queues.XS_BUFFER_SIZE));
+
+		assertThat(test.scan(Scannable.Attr.PARENT)).isSameAs(source1);
+		assertThat(test.scan(Scannable.Attr.RUN_STYLE)).isSameAs(Scannable.Attr.RunStyle.SYNC);
+	}
+
+	@Test
 	public void scanGroupJoinSubscription() {
 		CoreSubscriber<String> actual = new LambdaSubscriber<>(null, e -> {}, null, sub -> sub.request(100));
 		FluxGroupJoin.GroupJoinSubscription<String, String, String, String, String> test =
@@ -319,6 +331,7 @@ public class FluxGroupJoinTest {
 
 		assertThat(test.scan(Scannable.Attr.ACTUAL)).isSameAs(parent);
 		assertThat(test.scan(Scannable.Attr.PARENT)).isSameAs(sub);
+		assertThat(test.scan(Scannable.Attr.RUN_STYLE)).isSameAs(Scannable.Attr.RunStyle.SYNC);
 		assertThat(test.scan(Scannable.Attr.CANCELLED)).isFalse();
 		test.dispose();
 		assertThat(test.scan(Scannable.Attr.CANCELLED)).isTrue();
@@ -339,6 +352,7 @@ public class FluxGroupJoinTest {
 		test.onSubscribe(sub);
 
 		assertThat(test.scan(Scannable.Attr.PARENT)).isSameAs(sub);
+		assertThat(test.scan(Scannable.Attr.RUN_STYLE)).isSameAs(Scannable.Attr.RunStyle.SYNC);
 		assertThat(test.scan(Scannable.Attr.CANCELLED)).isFalse();
 		test.dispose();
 		assertThat(test.scan(Scannable.Attr.CANCELLED)).isTrue();
